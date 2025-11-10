@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 10
+
+struct Stack {
+    int items[MAX];
+    int top;
+};
+
+typedef struct Stack st;
+void createEmptyStack(st *s);
+int isFull(st *s);
+int isEmpty(st *s);
+void push(st *s, int newitem);
+int pop(st *s);
+void printStack(st *s);
+int peek(st *s);
+
+void createEmptyStack(st *s) {
+    s->top = -1;
+}
+
+int isFull(st *s) {
+    return s->top == MAX - 1;
+}
+
+int isEmpty(st *s) {
+    return s->top == -1;
+}
+
+void push(st *s, int newitem) {
+    if (isFull(s)) {
+        printf("STACK FULL\n");
+    } else {
+        s->top++;
+        s->items[s->top] = newitem;
+        printf("Inserted %d\n", newitem);
+    }
+}
+
+int pop(st *s) {
+    if (isEmpty(s)) {
+        printf("STACK EMPTY\n");
+        return -1;
+    } else {
+        int val = s->items[s->top];
+        s->top--;
+        printf("Popped %d\n", val);
+        return val;
+    }
+}
+
+int peek(st *s) {
+    if (isEmpty(s)) {
+        printf("STACK EMPTY\n");
+        return -1;
+    } else {
+        printf("Top element is %d\n", s->items[s->top]);
+        return s->items[s->top];
+    }
+}
+
+void printStack(st *s) {
+    if (isEmpty(s)) {
+        printf("STACK EMPTY\n");
+    } else {
+        printf("Stack: ");
+        for (int i = 0; i <= s->top; i++) {
+            printf("%d ", s->items[i]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    st *s = (st *)malloc(sizeof(st));
+    createEmptyStack(s);
+
+    int choice, value;
+    while (1) {
+        printf("\n1. Push\n2. Pop\n3. Peek\n4. Display Stack\n5. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value to push: ");
+                scanf("%d", &value);
+                push(s, value);
+                break;
+            case 2:
+                pop(s);
+                break;
+            case 3:
+                peek(s);
+                break;
+            case 4:
+                printStack(s);
+                break;
+            case 5:
+                free(s);
+                exit(0);
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
