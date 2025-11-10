@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <stdlib.h>
+void hashingSort(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+
+    int *hashTable = (int *)calloc(max + 1, sizeof(int)); 
+    for (int i = 0; i < n; i++) {
+        hashTable[arr[i]]++;
+    }
+    int k = 0;
+    for (int i = 0; i <= max; i++) {
+        while (hashTable[i] > 0) {
+            arr[k++] = i;
+            hashTable[i]--;
+        }
+    }
+    free(hashTable);
+}
+void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+int main() {
+    int arr[] = {4, 2, 2, 8, 3, 3, 1};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    printf("Original array: ");
+    printArray(arr, n);
+    hashingSort(arr, n);
+    printf("Sorted array: ");
+    printArray(arr, n);
+    return 0;
+}
