@@ -1,64 +1,118 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX 5
-int queue[MAX];
-int front = -1, rear = -1;
-void enqueue(int data) {
-    if (rear == MAX-1) {
-        printf("Queue Overflow\n");
-    } else {
-        if (front == -1) front = 0;
-        rear++;
-        queue[rear] = data;
-        printf("%d inserted\n", data);
-    }
-}
-int dequeue() {
+typedef struct Node {
     int data;
-    if (front == -1 || front > rear) {
-        printf("Queue Underflow\n");
-        return -1;
-    } else {
-        data = queue[front];
-        front++;
-        printf("%d deleted\n", data);
-        return data;
-    }
+    struct Node* next;
+} Node;
+typedef struct {
+    Node* head;
+    int size;
+} LinkedList;
+void insert_at_beginning(LinkedList* list, int data);
+void insert_at_end(LinkedList* list, int data);
+void delete_node(LinkedList* list, int data);
+Node* search_node(LinkedList* list, int data);
+int get_size(LinkedList* list);
+void print_list(LinkedList* list);
+void free_list(LinkedList* list);
+
+void insert_at_beginning(LinkedList* list, int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) return;
+    new_node->data = data;
+    new_node->next = list->head;
+    list->head = new_node;
+    list->size++;
 }
-void display() {
-    if (front == -1 || front > rear) {
-        printf("Queue is empty\n");
+
+void insert_at_end(LinkedList* list, int data) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    if (new_node == NULL) return;
+    new_node->data = data;
+    new_node->next = NULL;
+    if (list->head == NULL) {
+        list->head = new_node;
     } else {
-        printf("Queue elements: ");
-        for (int i = front; i <= rear; i++) {
-            printf("%d ", queue[i]);
+        Node* current = list->head;
+        while (current->next != NULL) {
+            current = current->next;
         }
-        printf("\n");
+        current->next = new_node;
+    }
+    list->size++;
+}
+
+void delete_node(LinkedList* list, int data) {
+    if (list->head == NULL) return;
+    if (list->head->data == data) {
+        Node* temp = list->head;
+        list->head = list->head->next;
+        free(temp);
+        list->size--;
+        return;
+    }
+    Node* current = list->head;
+    while (current->next != NULL && current->next->data != data) {
+        current = current->next;
+    }
+    if (current->next != NULL) {
+        Node* temp = current->next;
+        current->next = current->next->next;
+        free(temp);
+        list->size--;
     }
 }
 
-int main() {
-    int choice, value;
-    while (1) {
-        printf("\n1. Enqueue\n2. Dequeue\n3. Display\n4. Exit\nEnter your choice: ");
-        scanf("%d", &choice);
-        switch (choice) {
-            case 1:
-                printf("Enter value to enqueue: ");
-                scanf("%d", &value);
-                enqueue(value);
-                break;
-            case 2:
-                dequeue();
-                break;
-            case 3:
-                display();
-                break;
-            case 4:
-                exit(0);
-            default:
-                printf("Invalid choice! Please try again.\n");
-        }
+Node* search_node(LinkedList* list, int data) {
+    Node* current = list->head;
+    while (current != NULL) {
+        if (current->data == data) return current;
+        current = current->next;
     }
-    return 0;
+    return NULL;
+}
+
+int get_size(LinkedList* list) {
+    return list->size;
+}
+
+void print_list(LinkedList* list) {
+    Node* current = list->head;
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    printf("NULL\n");
+}
+
+void free_list(LinkedList* list) {
+    Node* current = list->head;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
+    list->head = NULL;
+    list->size = 0;
+}
+
+int main() {
+    LinkedList my_list = {NULL, 0};
+    insert_at_beginning(&my_list, 3);
+    insert_at_beginning(&my_list, 2);
+    insert_at_beginning(&my_list, 1);
+    printf("After inserting 1, 2, 3 at the beginning:\n");
+    print_list(&my_list);
+    insert_at_end(&my_list, 4);
+    insert_at_end(&my_list, 5);
+    printf("After inserting 4 and 5 at the end:\n");
+    print_list(&my_list);
+    delete_node(&my_list, 3);
+    printf("After deleting node with value 3:\n");
+    print_list(&my_list);
+    Node* found_node = search_node(&my_list, 4);
+    printf("Searched for 4, found: %s\n", found_node ? "Yes" : "No");
+    printf("Size of the list: %d\n", get_size(&my_list));
+    free_list(&my_list);
+   return 0;
 }
