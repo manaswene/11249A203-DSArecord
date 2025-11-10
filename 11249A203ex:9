@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct TreeNode {
+    char value;
+    struct TreeNode* left;
+    struct TreeNode* right;
+};
+
+struct Stack {
+    struct TreeNode* arr[100];
+    int top;
+};
+struct TreeNode* createNode(char value) {
+    struct TreeNode* newNode = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    newNode->value = value;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+void initStack(struct Stack* stack) {
+    stack->top = -1;
+}
+
+int isEmpty(struct Stack* stack) {
+    return stack->top == -1;
+}
+
+void push(struct Stack* stack, struct TreeNode* node) {
+    stack->arr[++stack->top] = node;
+}
+
+struct TreeNode* pop(struct Stack* stack) {
+    return stack->arr[stack->top--];
+}
+void preorderTraversal(struct TreeNode* root) {
+    if (root == NULL) return;
+    
+    struct Stack stack;
+    initStack(&stack);
+    push(&stack, root);
+    
+    while (!isEmpty(&stack)) {
+        struct TreeNode* node = pop(&stack);
+        printf("%c ", node->value);
+
+        if (node->right) push(&stack, node->right);
+        if (node->left) push(&stack, node->left);
+    }
+}
+void inorderTraversal(struct TreeNode* root) {
+    struct TreeNode* node = root;
+    struct Stack stack;
+    initStack(&stack);
+    
+    while (node != NULL || !isEmpty(&stack)) {
+        while (node != NULL) {
+            push(&stack, node);
+            node = node->left;
+        }
+        node = pop(&stack);  
+        printf("%c ", node->value); 
+        node = node->right;  
+    }
+}
+void postorderTraversal(struct TreeNode* root) {
+    if (root == NULL) return;
+    
+    struct Stack s1, s2;
+    initStack(&s1);
+    initStack(&s2);
+    
+    push(&s1, root);
+    while (!isEmpty(&s1)) {
+        struct TreeNode* node = pop(&s1);
+        push(&s2, node);
+        
+        if (node->left) push(&s1, node->left);
+        if (node->right) push(&s1, node->right);
+    }
+    while (!isEmpty(&s2)) {
+        struct TreeNode* node = pop(&s2);
+        printf("%c ", node->value);
+    }
+}
+
+int main() {
+    struct TreeNode* root = createNode('A');
+    root->left = createNode('B');
+    root->right = createNode('C');
+    root->left->left = createNode('D');
+    root->left->right = createNode('E');
+    root->right->right = createNode('F');
+    printf("Preorder Traversal: ");
+    preorderTraversal(root);
+    printf("\n");
+    printf("Inorder Traversal: ");
+    inorderTraversal(root);
+    printf("\n");
+    printf("Postorder Traversal: ");
+    postorderTraversal(root);
+    printf("\n");
+    return 0;
+}
