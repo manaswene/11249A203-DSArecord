@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+#define MAX_SIZE 100
+
+void insert(int arr[], int *size, int element, int index) {
+    if (*size >= MAX_SIZE) {
+        printf("Array is full.\n");
+        return;
+    }
+    for (int i = *size; i > index; i--) {
+        arr[i] = arr[i - 1];
+    }
+    arr[index] = element;
+    (*size)++;
+}
+
+void traverse(int arr[], int size) {
+    printf("Array Elements: ");
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+int search(int arr[], int size, int element) {
+    for (int i = 0; i < size; i++) {
+        if (arr[i] == element) {
+            return i; 
+        }
+    }
+    return -1;  
+int main() {
+    int arr[MAX_SIZE] = {1, 2, 3, 4, 5};
+    int size = 5;
+    traverse(arr, size);
+    insert(arr, &size, 10, 2);  // Insert 10 at index 2
+    traverse(arr, size);
+    int element = 10;
+    int index = search(arr, size, element);
+    if (index != -1) {
+        printf("Element %d found at index %d.\n", element, index);
+    } else {
+        printf("Element %d not found.\n", element);
+    }
+
+    return 0;
+}
